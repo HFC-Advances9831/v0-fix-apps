@@ -1,8 +1,8 @@
 "use client"
 
 import { useSearchParams, useRouter } from "next/navigation"
-import { Suspense, useState } from "react"
-import { X, Maximize2, Minimize2, RotateCcw, ExternalLink } from "lucide-react"
+import { Suspense, useState, useEffect } from "react"
+import { X, Maximize2, Minimize2, RotateCcw, ExternalLink, Loader2 } from "lucide-react"
 
 function ViewerContent() {
   const searchParams = useSearchParams()
@@ -11,6 +11,10 @@ function ViewerContent() {
   const title = searchParams.get("title") || "Viewer"
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [key, setKey] = useState(0)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Create proxied URL - routes through our server to bypass blocks
+  const proxiedUrl = url ? `/api/proxy?url=${encodeURIComponent(url)}` : null
 
   if (!url) {
     return (
@@ -35,7 +39,12 @@ function ViewerContent() {
   }
 
   const handleRefresh = () => {
+    setIsLoading(true)
     setKey(prev => prev + 1)
+  }
+
+  const handleLoad = () => {
+    setIsLoading(false)
   }
 
   return (
@@ -88,13 +97,19 @@ function ViewerContent() {
 
       {/* Iframe Container */}
       <div className="flex-1 relative">
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-background z-10">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </div>
+        )}
         <iframe
           key={key}
-          src={url}
+          src={proxiedUrl || ""}
           className="absolute inset-0 w-full h-full border-0"
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock allow-presentation"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; gamepad"
           title={title}
+          onLoad={handleLoad}
         />
       </div>
     </div>

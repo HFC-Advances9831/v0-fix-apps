@@ -4,38 +4,38 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Dark Orange Theme */
-  --background: oklch(0.12 0 0);
+  /* Dark Red Theme */
+  --background: oklch(0.08 0 0);
   --foreground: oklch(0.98 0 0);
-  --card: oklch(0.18 0 0);
+  --card: oklch(0.14 0.01 15);
   --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.18 0 0);
+  --popover: oklch(0.14 0.01 15);
   --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.7 0.18 45);
+  --primary: oklch(0.55 0.22 25);
   --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.22 0 0);
+  --secondary: oklch(0.18 0 0);
   --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.25 0 0);
+  --muted: oklch(0.22 0 0);
   --muted-foreground: oklch(0.65 0 0);
-  --accent: oklch(0.75 0.16 50);
+  --accent: oklch(0.55 0.22 25);
   --accent-foreground: oklch(0.98 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: oklch(0.55 0.22 25);
   --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.28 0 0);
-  --input: oklch(0.28 0 0);
-  --ring: oklch(0.7 0.18 45);
-  --chart-1: oklch(0.7 0.18 45);
-  --chart-2: oklch(0.75 0.16 50);
-  --chart-3: oklch(0.65 0.14 40);
-  --chart-4: oklch(0.8 0.12 55);
-  --chart-5: oklch(0.6 0.2 35);
+  --border: oklch(0.25 0.03 20);
+  --input: oklch(0.22 0 0);
+  --ring: oklch(0.55 0.22 25);
+  --chart-1: oklch(0.55 0.22 25);
+  --chart-2: oklch(0.6 0.2 30);
+  --chart-3: oklch(0.5 0.18 20);
+  --chart-4: oklch(0.65 0.15 35);
+  --chart-5: oklch(0.45 0.25 15);
   --radius: 0.75rem;
   
-  /* Custom orange colors */
-  --orange-primary: oklch(0.7 0.18 45);
-  --orange-secondary: oklch(0.75 0.16 50);
-  --orange-light: oklch(0.8 0.14 55);
-  --orange-glow: oklch(0.7 0.18 45 / 0.4);
+  /* Custom red colors */
+  --red-primary: oklch(0.55 0.22 25);
+  --red-secondary: oklch(0.6 0.2 30);
+  --red-light: oklch(0.65 0.18 35);
+  --red-glow: oklch(0.55 0.22 25 / 0.4);
 }
 
 @theme inline {
@@ -80,34 +80,34 @@
   }
 }
 
-/* Custom gradient background */
+/* Custom gradient background - Red/Black */
 .gradient-bg {
   background: 
-    radial-gradient(ellipse at top, oklch(0.7 0.18 45 / 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at bottom right, oklch(0.75 0.16 50 / 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse 120% 60% at 50% 100%, oklch(0.55 0.22 25 / 0.25) 0%, transparent 60%),
+    radial-gradient(ellipse at top, oklch(0.3 0.08 20 / 0.3) 0%, transparent 50%),
     var(--background);
 }
 
-/* Orange gradient text */
+/* Red gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, oklch(0.7 0.18 45), oklch(0.75 0.16 50), oklch(0.8 0.14 55));
+  background: linear-gradient(135deg, oklch(0.65 0.22 25), oklch(0.55 0.2 30), oklch(0.7 0.18 35));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Orange gradient button */
+/* Red gradient button */
 .gradient-btn {
-  background: linear-gradient(135deg, oklch(0.7 0.18 45), oklch(0.75 0.16 50));
+  background: linear-gradient(135deg, oklch(0.55 0.22 25), oklch(0.5 0.2 30));
 }
 
 /* Glow effect */
 .glow {
-  box-shadow: 0 0 30px oklch(0.7 0.18 45 / 0.4);
+  box-shadow: 0 0 30px oklch(0.55 0.22 25 / 0.4);
 }
 
 .glow-hover:hover {
-  box-shadow: 0 0 40px oklch(0.7 0.18 45 / 0.5);
+  box-shadow: 0 0 40px oklch(0.55 0.22 25 / 0.5);
 }
 
 /* Welcome glow */
@@ -118,7 +118,7 @@
   transform: translateX(-50%);
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, oklch(0.7 0.18 45 / 0.4) 0%, transparent 70%);
+  background: radial-gradient(circle, oklch(0.55 0.22 25 / 0.4) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -137,4 +137,20 @@
 
 .toggle-switch.active .toggle-knob {
   @apply left-7;
+}
+
+/* Game card hover effect */
+.game-card {
+  @apply aspect-square rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 border-3;
+  border-color: oklch(0.55 0.22 25 / 0.5);
+}
+
+.game-card:hover {
+  transform: scale(1.05) translateY(-4px);
+  border-color: oklch(0.55 0.22 25);
+  box-shadow: 0 10px 40px oklch(0.55 0.22 25 / 0.4);
+}
+
+.game-card img {
+  @apply w-full h-full object-cover;
 }

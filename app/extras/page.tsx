@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 
 export const metadata: Metadata = {
-  title: "Extras - The Carey Network",
+  title: "Extras - Carey Network",
   description: "More features coming soon",
 }
 
@@ -53,6 +53,10 @@ export default function ExtrasPage() {
           </Link>
         </div>
       </div>
+
+      <footer className="text-center mt-16 text-muted-foreground text-sm">
+        © 2026 Carey Network
+      </footer>
     </main>
   )
 }

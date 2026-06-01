@@ -1,38 +1,30 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import type { Metadata } from "next"
-
-// Note: metadata export not supported in client components
-// Using useEffect to set document title instead
 
 const settingsConfig = [
   {
     id: "cloak",
     title: "Cloak",
-    description: "Disguise tab as Google to stay hidden",
-    icon: "🎭",
+    description: "Disguise tab as Google",
     type: "button" as const,
   },
   {
     id: "auto-cloak",
     title: "Auto Cloak",
-    description: "Automatically cloak on page load",
-    icon: "🔄",
+    description: "Cloak on page load",
     type: "toggle" as const,
   },
   {
     id: "panic-button",
     title: "Panic Button",
-    description: "Press ` or Esc to instantly redirect",
-    icon: "🚨",
+    description: "Press ` or Esc to redirect",
     type: "toggle" as const,
   },
   {
     id: "webapp-mode",
     title: "Web-App Mode",
-    description: "Optimized for standalone app experience",
-    icon: "📱",
+    description: "Standalone experience",
     type: "toggle" as const,
   },
 ]
@@ -45,7 +37,6 @@ export default function SettingsPage() {
   })
   const [notification, setNotification] = useState<string | null>(null)
 
-  // Load saved toggle states
   useEffect(() => {
     const savedToggles: Record<string, boolean> = {}
     settingsConfig.forEach((setting) => {
@@ -57,7 +48,6 @@ export default function SettingsPage() {
     setToggles(savedToggles)
   }, [])
 
-  // Panic button handler
   const triggerPanic = useCallback(() => {
     window.location.href = "https://www.google.com"
   }, [])
@@ -80,7 +70,7 @@ export default function SettingsPage() {
     setToggles((prev) => ({ ...prev, [id]: newValue }))
     localStorage.setItem(`toggle_${id}`, String(newValue))
     
-    showNotification(`${id.replace("-", " ")} ${newValue ? "enabled" : "disabled"}`)
+    showNotification(`${id.replace(/-/g, " ")} ${newValue ? "enabled" : "disabled"}`)
   }
 
   const activateCloak = () => {
@@ -108,7 +98,6 @@ export default function SettingsPage() {
         SETTINGS
       </h1>
 
-      {/* Notification */}
       {notification && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-full gradient-btn text-primary-foreground font-semibold shadow-lg glow animate-in fade-in slide-in-from-top-4 duration-300">
           {notification}
@@ -121,37 +110,31 @@ export default function SettingsPage() {
             key={setting.id}
             className="bg-card rounded-3xl border border-border p-8 flex flex-col items-center gap-4 text-center hover:border-primary/50 transition-colors"
           >
-            <div className="w-14 h-14 rounded-xl bg-primary/20 flex items-center justify-center text-2xl">
-              {setting.icon}
-            </div>
-            <h3 className="text-lg font-bold text-foreground">{setting.title}</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {setting.description}
-            </p>
+            <h3 className="text-xl font-bold text-foreground">{setting.title}</h3>
 
             {setting.type === "button" ? (
               <button
                 onClick={activateCloak}
-                className="px-8 py-3 rounded-full font-semibold gradient-btn text-primary-foreground glow hover:scale-105 transition-transform"
+                className="px-8 py-3 rounded-lg font-semibold border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
               >
                 Activate
               </button>
             ) : (
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-muted-foreground">Off</span>
-                <button
-                  onClick={() => handleToggle(setting.id)}
-                  className={`toggle-switch ${toggles[setting.id] ? "active" : ""}`}
-                  aria-label={`Toggle ${setting.title}`}
-                >
-                  <div className="toggle-knob" />
-                </button>
-                <span className="text-sm text-muted-foreground">On</span>
-              </div>
+              <button
+                onClick={() => handleToggle(setting.id)}
+                className={`toggle-switch ${toggles[setting.id] ? "active" : ""}`}
+                aria-label={`Toggle ${setting.title}`}
+              >
+                <div className="toggle-knob" />
+              </button>
             )}
           </div>
         ))}
       </div>
+
+      <footer className="text-center mt-16 text-muted-foreground text-sm">
+        © 2026 Carey Network
+      </footer>
     </main>
   )
 }

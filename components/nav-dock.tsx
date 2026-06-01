@@ -1,13 +1,14 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { Home, LayoutGrid, Gamepad2, Settings, MoreHorizontal } from "lucide-react"
+import { LayoutGrid, Gamepad2, Settings, MoreHorizontal } from "lucide-react"
 
 const navItems = [
-  { href: "/", icon: Home, label: "Home", page: "home" },
-  { href: "/apps", icon: LayoutGrid, label: "Apps", page: "apps" },
+  { href: "/", icon: "logo", label: "Home", page: "home" },
   { href: "/games", icon: Gamepad2, label: "Games", page: "games" },
+  { href: "/apps", icon: LayoutGrid, label: "Apps", page: "apps" },
   { href: "/settings", icon: Settings, label: "Settings", page: "settings" },
   { href: "/extras", icon: MoreHorizontal, label: "More", page: "extras" },
 ]
@@ -23,8 +24,8 @@ export function NavDock() {
   return (
     <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-5 py-3 bg-card/95 backdrop-blur-xl rounded-full border border-border shadow-2xl z-50 glow">
       {navItems.map((item) => {
-        const Icon = item.icon
         const active = isActive(item.href)
+        const Icon = item.icon
         
         return (
           <Link
@@ -38,7 +39,18 @@ export function NavDock() {
               }
             `}
           >
-            <Icon className="w-5 h-5" />
+            {item.icon === "logo" ? (
+              <Image
+                src="/logo.png"
+                alt="Home"
+                width={20}
+                height={20}
+                className={active ? "" : "invert opacity-60"}
+                style={{ filter: active ? "invert(1)" : undefined }}
+              />
+            ) : (
+              <Icon className="w-5 h-5" />
+            )}
             <span className="text-[10px] font-semibold uppercase tracking-wide">
               {item.label}
             </span>

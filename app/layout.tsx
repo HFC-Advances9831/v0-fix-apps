@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'The Carey Network',
-  description: 'Your personal dashboard for apps, games, and more',
+  title: 'Carey Network',
+  description: 'Your entertainment hub',
   manifest: '/manifest.json',
   icons: {
     icon: '/favicon.ico',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#ff6b00',
+  themeColor: '#dc2626',
   width: 'device-width',
   initialScale: 1,
 }

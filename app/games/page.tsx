@@ -1,11 +1,8 @@
+"use client"
+
 import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
-
-export const metadata: Metadata = {
-  title: "Games - Carey Network",
-  description: "Play your favorite games",
-}
 
 const games = [
   { name: "2048", url: "https://play2048.co/", image: "https://play2048.co/meta/apple-touch-icon.png" },
@@ -60,11 +57,9 @@ export default function GamesPage() {
       
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 md:gap-4">
         {games.map((game, index) => (
-          <a
+          <Link
             key={`${game.name}-${index}`}
-            href={game.url}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={`/viewer?url=${encodeURIComponent(game.url)}&title=${encodeURIComponent(game.name)}`}
             className="game-card bg-card"
             title={game.name}
           >
@@ -76,7 +71,7 @@ export default function GamesPage() {
               className="w-full h-full object-cover"
               unoptimized
             />
-          </a>
+          </Link>
         ))}
       </div>
 

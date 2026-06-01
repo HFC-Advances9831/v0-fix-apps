@@ -1,9 +1,6 @@
-import type { Metadata } from "next"
+"use client"
 
-export const metadata: Metadata = {
-  title: "Apps - Carey Network",
-  description: "Your favorite apps in one place",
-}
+import Link from "next/link"
 
 const apps = [
   {
@@ -81,16 +78,14 @@ export default function AppsPage() {
       
       <div className="flex justify-center gap-6 md:gap-8 flex-wrap px-4">
         {apps.map((app) => (
-          <a
+          <Link
             key={app.name}
-            href={app.href}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={`/viewer?url=${encodeURIComponent(app.href)}&title=${encodeURIComponent(app.name)}`}
             className={`flex items-center justify-center w-32 h-32 md:w-36 md:h-36 rounded-3xl ${app.bg} hover:-translate-y-2 hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-primary/20`}
             title={app.name}
           >
             {app.icon}
-          </a>
+          </Link>
         ))}
       </div>
 

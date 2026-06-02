@@ -36,7 +36,7 @@ export default function AppViewerPage() {
 
   if (!app) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="fixed inset-0 flex items-center justify-center bg-background z-[100]">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">App not found</h1>
           <button 
@@ -70,9 +70,9 @@ export default function AppViewerPage() {
   }
 
   return (
-    <div className={`bg-background ${isFullscreen ? "fixed inset-0 z-50" : "min-h-screen"}`}>
+    <div className="fixed inset-0 z-[100] bg-background flex flex-col">
       {/* Header Controls */}
-      <div className="flex items-center justify-between p-3 bg-card border-b border-border">
+      <div className="flex items-center justify-between p-3 bg-card border-b border-border shrink-0">
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push("/apps")}
@@ -110,7 +110,7 @@ export default function AppViewerPage() {
       </div>
 
       {/* App Frame */}
-      <div className={`relative ${isFullscreen ? "h-[calc(100vh-60px)]" : "h-[calc(100vh-120px)]"}`}>
+      <div className="relative flex-1">
         {isLoading && app.canEmbed && (
           <div className="absolute inset-0 flex items-center justify-center bg-background z-10">
             <div className="flex flex-col items-center gap-4">

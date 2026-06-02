@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import Image from "next/image"
 import { apps } from "@/lib/apps-data"
 
@@ -13,9 +12,11 @@ export default function AppsPage() {
       
       <div className="flex justify-center gap-6 md:gap-8 flex-wrap px-4">
         {apps.map((app) => (
-          <Link
+          <a
             key={app.id}
-            href={`/app/${app.id}`}
+            href={app.url}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center justify-center w-32 h-32 md:w-36 md:h-36 rounded-3xl bg-card border border-border hover:-translate-y-2 hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 overflow-hidden"
             title={app.name}
           >
@@ -27,7 +28,7 @@ export default function AppsPage() {
               className="w-full h-full object-cover"
               unoptimized
             />
-          </Link>
+          </a>
         ))}
       </div>
 

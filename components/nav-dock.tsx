@@ -45,7 +45,7 @@ export function NavDock() {
                 alt="Home"
                 width={20}
                 height={20}
-                className={active ? "" : "invert opacity-60"}
+                className={`w-5 h-5 ${active ? "" : "invert opacity-60"}`}
                 style={{ filter: active ? "invert(1)" : undefined }}
               />
             ) : (

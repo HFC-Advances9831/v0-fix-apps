@@ -13,7 +13,8 @@ export function Header() {
             alt="Carey Network"
             width={36}
             height={36}
-            className="invert"
+            className="invert w-9 h-9"
+            priority
           />
           <span className="text-xl font-bold gradient-text">Carey Network</span>
         </Link>

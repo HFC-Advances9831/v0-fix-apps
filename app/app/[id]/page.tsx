@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
-import { X, Maximize2, Minimize2, RotateCcw } from "lucide-react"
+import { X, Maximize2, Minimize2, RotateCcw, AlertCircle } from "lucide-react"
 import { apps } from "@/lib/apps-data"
 import Image from "next/image"
 
@@ -16,6 +16,7 @@ export default function AppViewerPage() {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [key, setKey] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
+  const [hasFailed, setHasFailed] = useState(false)
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -26,6 +27,20 @@ export default function AppViewerPage() {
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [isFullscreen])
+
+  // 15-second timeout for app failure
+  useEffect(() => {
+    if (!isLoading) return
+    
+    const failureTimeout = setTimeout(() => {
+      if (isLoading) {
+        setHasFailed(true)
+        setIsLoading(false)
+      }
+    }, 15000)
+    
+    return () => clearTimeout(failureTimeout)
+  }, [isLoading, key])
 
   if (!app) {
     return (
@@ -45,6 +60,7 @@ export default function AppViewerPage() {
 
   const handleRefresh = () => {
     setIsLoading(true)
+    setHasFailed(false)
     setKey(prev => prev + 1)
   }
 
@@ -129,6 +145,56 @@ export default function AppViewerPage() {
               <p className="text-sm text-muted-foreground">
                 Connecting to proxy...
               </p>
+            </div>
+          </div>
+        )}
+
+        {/* Failure screen after 15 seconds */}
+        {hasFailed && (
+          <div className="absolute inset-0 flex items-center justify-center bg-background z-10">
+            {/* Background glow effect - red for error */}
+            <div className="absolute inset-0 overflow-hidden">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-destructive/20 rounded-full blur-[100px]" />
+            </div>
+            
+            <div className="relative flex flex-col items-center gap-6 text-center px-4">
+              {/* App icon with error state */}
+              <div className="relative">
+                {/* Error ring */}
+                <div className="absolute -inset-4 rounded-full border-4 border-destructive/50" />
+                {/* App icon */}
+                <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-destructive/50 shadow-lg shadow-destructive/30 opacity-60">
+                  <Image
+                    src={app.icon}
+                    alt={app.name}
+                    fill
+                    className="object-cover grayscale"
+                  />
+                </div>
+                {/* Error badge */}
+                <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-destructive flex items-center justify-center">
+                  <AlertCircle className="w-5 h-5 text-destructive-foreground" />
+                </div>
+              </div>
+              
+              {/* Error text */}
+              <div>
+                <h2 className="text-xl font-bold text-foreground mb-2">
+                  App Failed to Load
+                </h2>
+                <p className="text-muted-foreground max-w-sm">
+                  {app.name} could not be loaded. Please try again later or check your connection.
+                </p>
+              </div>
+              
+              {/* Retry button */}
+              <button
+                onClick={handleRefresh}
+                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors flex items-center gap-2"
+              >
+                <RotateCcw className="w-4 h-4" />
+                Try Again
+              </button>
             </div>
           </div>
         )}

@@ -8,11 +8,12 @@ export interface App {
 }
 
 const CAREY_ICONS = "https://careynet.github.io/images/apps"
+const CAREY_EMBEDS = "https://careynet.github.io/assets/embeds"
 
 export const apps: App[] = [
-  { id: "youtube", name: "YouTube", icon: `${CAREY_ICONS}/youtube.png`, url: "https://www.youtube.com/", embedUrl: "https://www.youtube.com/embed/videoseries?list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf&autoplay=0", canEmbed: true },
-  { id: "discord", name: "Discord", icon: `${CAREY_ICONS}/discord.png`, url: "https://discord.com/app", embedUrl: "https://e.widgetbot.io/channels/1234567890/1234567890", canEmbed: false },
-  { id: "gemini", name: "Gemini", icon: `${CAREY_ICONS}/gemini.png`, url: "https://gemini.google.com/", embedUrl: "https://gemini.google.com/", canEmbed: false },
-  { id: "twitch", name: "Twitch", icon: `${CAREY_ICONS}/twitch.png`, url: "https://www.twitch.tv/", embedUrl: "https://player.twitch.tv/?channel=twitch&parent=localhost", canEmbed: true },
-  { id: "snapchat", name: "Snapchat", icon: `${CAREY_ICONS}/snapchat.png`, url: "https://web.snapchat.com/", embedUrl: "https://web.snapchat.com/", canEmbed: false },
+  { id: "youtube", name: "YouTube", icon: `${CAREY_ICONS}/youtube.png`, url: "https://www.youtube.com/", embedUrl: `${CAREY_EMBEDS}/youtube.html`, canEmbed: true },
+  { id: "discord", name: "Discord", icon: `${CAREY_ICONS}/discord.png`, url: "https://discord.com/app", embedUrl: `${CAREY_EMBEDS}/discord.html`, canEmbed: true },
+  { id: "gemini", name: "Gemini", icon: `${CAREY_ICONS}/gemini.png`, url: "https://gemini.google.com/", embedUrl: `${CAREY_EMBEDS}/gemini.html`, canEmbed: true },
+  { id: "twitch", name: "Twitch", icon: `${CAREY_ICONS}/twitch.png`, url: "https://www.twitch.tv/", embedUrl: `${CAREY_EMBEDS}/twitch.html`, canEmbed: true },
+  { id: "snapchat", name: "Snapchat", icon: `${CAREY_ICONS}/snapchat.png`, url: "https://web.snapchat.com/", embedUrl: `${CAREY_EMBEDS}/snapchat.html`, canEmbed: true },
 ]

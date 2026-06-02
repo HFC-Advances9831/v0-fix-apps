@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
-import { X, Maximize2, Minimize2, RotateCcw, ExternalLink } from "lucide-react"
+import { X, Maximize2, Minimize2, RotateCcw, ExternalLink, AlertTriangle } from "lucide-react"
 import { apps } from "@/lib/apps-data"
 
 export default function AppViewerPage() {
@@ -15,7 +15,7 @@ export default function AppViewerPage() {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [key, setKey] = useState(0)
   const [isLoading, setIsLoading] = useState(app?.canEmbed ?? false)
-  const [embedError, setEmbedError] = useState(false)
+  const [showFallback, setShowFallback] = useState(false)
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -27,11 +27,20 @@ export default function AppViewerPage() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [isFullscreen])
 
+  // Show fallback after 8 seconds if still loading
   useEffect(() => {
-    const timeout = setTimeout(() => {
+    const loadingTimeout = setTimeout(() => {
       setIsLoading(false)
     }, 5000)
-    return () => clearTimeout(timeout)
+    
+    const fallbackTimeout = setTimeout(() => {
+      setShowFallback(true)
+    }, 8000)
+    
+    return () => {
+      clearTimeout(loadingTimeout)
+      clearTimeout(fallbackTimeout)
+    }
   }, [key])
 
   if (!app) {
@@ -52,7 +61,7 @@ export default function AppViewerPage() {
 
   const handleRefresh = () => {
     setIsLoading(true)
-    setEmbedError(false)
+    setShowFallback(false)
     setKey(prev => prev + 1)
   }
 
@@ -62,11 +71,6 @@ export default function AppViewerPage() {
 
   const handleOpenExternal = () => {
     window.open(app.url, "_blank", "noopener,noreferrer")
-  }
-
-  const handleIframeError = () => {
-    setEmbedError(true)
-    setIsLoading(false)
   }
 
   return (
@@ -82,6 +86,7 @@ export default function AppViewerPage() {
             <X className="w-5 h-5" />
           </button>
           <h1 className="font-semibold text-foreground truncate">{app.name}</h1>
+          <span className="text-xs px-2 py-1 bg-amber-500/20 text-amber-500 rounded-full">Experimental</span>
         </div>
         
         <div className="flex items-center gap-2">
@@ -101,7 +106,7 @@ export default function AppViewerPage() {
           </button>
           <button
             onClick={handleOpenExternal}
-            className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+            className="p-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
             title="Open in New Tab"
           >
             <ExternalLink className="w-5 h-5" />
@@ -116,11 +121,45 @@ export default function AppViewerPage() {
             <div className="flex flex-col items-center gap-4">
               <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
               <p className="text-muted-foreground">Loading {app.name}...</p>
+              <p className="text-xs text-muted-foreground/60">This is an experimental feature</p>
             </div>
           </div>
         )}
         
-        {embedError || !app.canEmbed ? (
+        {/* Fallback overlay when embed might not be working */}
+        {showFallback && (
+          <div className="absolute inset-0 flex items-center justify-center bg-background/95 z-20">
+            <div className="text-center p-8 max-w-md">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-amber-500/20 flex items-center justify-center">
+                <AlertTriangle className="w-8 h-8 text-amber-500" />
+              </div>
+              <h2 className="text-xl font-bold text-foreground mb-2">
+                Having trouble loading?
+              </h2>
+              <p className="text-muted-foreground mb-6">
+                App embedding is an experimental feature that may not always work. 
+                Click the button below to open {app.name} in a new tab instead.
+              </p>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={handleOpenExternal}
+                  className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors inline-flex items-center justify-center gap-2"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Open {app.name} in New Tab
+                </button>
+                <button
+                  onClick={() => setShowFallback(false)}
+                  className="px-6 py-2 text-muted-foreground hover:text-foreground transition-colors text-sm"
+                >
+                  Continue waiting
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!app.canEmbed ? (
           <div className="absolute inset-0 flex items-center justify-center bg-background">
             <div className="text-center p-8 max-w-md">
               <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-muted flex items-center justify-center">
@@ -146,11 +185,11 @@ export default function AppViewerPage() {
             key={key}
             src={app.embedUrl}
             className="absolute inset-0 w-full h-full border-0"
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock allow-presentation allow-downloads"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+            sandbox="allow-scripts allow-forms allow-same-origin allow-pointer-lock allow-downloads allow-popups"
+            allow="fullscreen; autoplay; clipboard-read; clipboard-write"
+            allowFullScreen
             title={app.name}
             onLoad={() => setIsLoading(false)}
-            onError={handleIframeError}
           />
         )}
       </div>

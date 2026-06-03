@@ -9,10 +9,10 @@ export default function HomePage() {
           <div className="welcome-glow" />
           
           <h1 className="text-3xl md:text-5xl font-extrabold mb-3 gradient-text relative">
-            Welcome to The Carey Network
+            Welcome to Carey Network
           </h1>
           <p className="text-lg text-muted-foreground mb-8 relative">
-            Your personal dashboard for apps, games, and more
+            Your entertainment hub
           </p>
           
           {/* Stats */}
@@ -22,7 +22,7 @@ export default function HomePage() {
               <span className="text-sm text-muted-foreground uppercase tracking-wide">Apps</span>
             </div>
             <div className="flex flex-col items-center">
-              <span className="text-4xl md:text-5xl font-extrabold text-primary">12</span>
+              <span className="text-4xl md:text-5xl font-extrabold text-primary">50+</span>
               <span className="text-sm text-muted-foreground uppercase tracking-wide">Games</span>
             </div>
             <div className="flex flex-col items-center">
@@ -34,16 +34,10 @@ export default function HomePage() {
           {/* Action Buttons */}
           <div className="flex justify-center gap-4 flex-wrap relative">
             <Link 
-              href="/apps" 
+              href="/games" 
               className="inline-flex items-center justify-center px-8 py-3 rounded-full font-semibold gradient-btn text-primary-foreground glow hover:scale-105 transition-transform"
             >
-              Explore Apps
-            </Link>
-            <Link 
-              href="/games" 
-              className="inline-flex items-center justify-center px-8 py-3 rounded-full font-semibold bg-secondary text-secondary-foreground border border-border hover:border-primary hover:bg-primary/10 transition-colors"
-            >
-              Play Games
+              Explore
             </Link>
           </div>
         </div>
@@ -76,6 +70,11 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="text-center mt-16 text-muted-foreground text-sm">
+        © 2026 Carey Network
+      </footer>
     </main>
   )
 }

@@ -7,17 +7,7 @@ export default function CareyNetworkTV() {
   const [currentVideo, setCurrentVideo] = useState({ id: '', title: '' });
   const [inputValue, setInputValue] = useState('');
 
-  // Curated fallback videos that browsers won't block
-  const featuredVideos = [
-    { id: "jfKfPfyJRdk", title: "Lofi Girl - Chill Lofi Beats Stream", author: "Lofi Girl", badge: "LIVE" },
-    { id: "CoZ438mPz9M", title: "24/7 Custom Gaming Mixture Hub", author: "Gaming Network", badge: "POPULAR" },
-    { id: "t70h9ub8B7o", title: "Satisfying Minecraft Timelapses & Creative Builds", author: "BlockCraft", badge: "MINECRAFT" },
-    { id: "dQw4w9WgXcQ", title: "Rick Astley - Never Gonna Give You Up", author: "Rick Astley", badge: "CLASSIC" },
-    { id: "n95S6o2N2S0", title: "ASMR Retro Gaming Longplay Lounge", author: "Nostalgia Vibes", badge: "RELAX" },
-    { id: "2Vv-BfVoq4g", title: "Ed Sheeran - Perfect (Official Music Video)", author: "Ed Sheeran", badge: "MUSIC" }
-  ];
-
-  // Extracts YouTube ID from links
+  // Extracts YouTube ID from links (handles normal links, mobile links, or raw IDs)
   const parseYouTubeId = (input: string) => {
     const urlRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
     const match = input.match(urlRegex);
@@ -36,7 +26,7 @@ export default function CareyNetworkTV() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0f0f0f', color: '#fff', fontFamily: 'sans-serif', padding: '20px' }}>
+    <div style={{ minHeight: '100vh', background: '#0f0f0f', color: '#fff', fontFamily: 'sans-serif', padding: '20px', display: 'flex', flexDirection: 'column' }}>
       
       {/* Header Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px', marginBottom: '30px', borderBottom: '1px solid #222', paddingBottom: '20px' }}>
@@ -58,49 +48,29 @@ export default function CareyNetworkTV() {
         </div>
       </div>
 
-      {/* Browse Mode */}
+      {/* Home/Browse Mode - Clean Landing Page without Video Cards */}
       {view === 'browse' && (
-        <div>
-          <h2 style={{ fontSize: '18px', color: '#aaa', marginBottom: '20px', fontWeight: 500 }}>Featured Hub Channels</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '24px' }}>
-            {featuredVideos.map((video) => (
-              <div 
-                key={video.id} 
-                onClick={() => { setCurrentVideo({ id: video.id, title: video.title }); setView('player'); }}
-                style={{ background: '#171717', borderRadius: '12px', overflow: 'hidden', cursor: 'pointer', border: '1px solid #222' }}
-              >
-                <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', background: '#000' }}>
-                  <img 
-                    src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`} 
-                    alt="thumbnail" 
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                  />
-                  <span style={{ position: 'absolute', bottom: '8px', right: '8px', background: 'rgba(0,0,0,0.8)', padding: '2px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold' }}>
-                    {video.badge}
-                  </span>
-                </div>
-                <div style={{ padding: '14px' }}>
-                  <div style={{ fontSize: '14px', fontWeight: 'bold', margin: '0 0 8px 0', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.4 }}>
-                    {video.title}
-                  </div>
-                  <div style={{ fontSize: '12px', color: '#aaa' }}>{video.author}</div>
-                </div>
-              </div>
-            ))}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginTop: '40px', padding: '20px' }}>
+          <div style={{ maxWidth: '500px', background: '#171717', border: '1px solid #222', borderRadius: '16px', padding: '40px 30px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+            <div style={{ fontSize: '50px', marginBottom: '15px' }}>📺</div>
+            <h2 style={{ fontSize: '22px', fontWeight: '600', margin: '0 0 10px 0', color: '#fff' }}>Ready to Stream</h2>
+            <p style={{ fontSize: '14px', color: '#aaa', margin: '0', lineHeight: '1.6' }}>
+              Paste a standard YouTube URL, a mobile link, or a direct 11-character video ID into the bar above to launch the custom player framework instantly.
+            </p>
           </div>
         </div>
       )}
 
       {/* Theater Player Mode */}
       {view === 'player' && (
-        <div>
+        <div style={{ maxWidth: '1200px', width: '100%', margin: '0 auto' }}>
           <button 
             onClick={() => setView('browse')}
             style={{ background: '#222', border: '1px solid #444', color: 'white', padding: '10px 20px', borderRadius: '20px', cursor: 'pointer', marginBottom: '20px', fontWeight: 'bold' }}
           >
-            ← Return to Dashboard
+            ← Return to Home
           </button>
-          <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', height: 0, background: '#000', borderRadius: '12px', overflow: 'hidden' }}>
+          <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', height: 0, background: '#000', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.7)' }}>
             <iframe 
               src={`https://www.youtube.com/embed/${currentVideo.id}?autoplay=1&modestbranding=1`}
               allowFullScreen 

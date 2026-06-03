@@ -11,6 +11,7 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: #0f0f0f;
+  font-family: sans-serif;
 }
 
 #loading-screen {
@@ -81,15 +82,19 @@ html, body {
   <div class="loader-content">
     <div class="logo">Carey Network</div>
     <div class="spinner"></div>
-    <div class="loading-text">Loading YouTube...</div>
+    <div class="loading-text">Loading YouTube Engine...</div>
   </div>
 </div>
 
+<!-- 
+  Using yewtu.be (a public Invidious network node). 
+  This loads a fully functional, browsable YouTube clone that works natively in iframes.
+-->
 <iframe
   id="appFrame"
-  src="https://learningacademics.malam.or.id/embed.html#https://youtube.com/"
+  src="https://yewtu.be/feed/popular"
   sandbox="allow-scripts allow-forms allow-same-origin allow-pointer-lock allow-downloads allow-popups"
-  allow="fullscreen; autoplay; clipboard-read; clipboard-write"
+  allow="fullscreen; autoplay; clipboard-write"
   allowfullscreen
 ></iframe>
 
@@ -97,14 +102,14 @@ html, body {
 const frame = document.getElementById('appFrame');
 const loader = document.getElementById('loading-screen');
 
-// Show frame after timeout or when loaded
+// Hide loading screen when the proxy interface fully handles the initial load
 const showFrame = () => {
   frame.classList.add('loaded');
   loader.classList.add('hidden');
 };
 
 frame.addEventListener('load', showFrame);
-setTimeout(showFrame, 5000); // Fallback after 5 seconds
+setTimeout(showFrame, 4000); // Fallback timeout
 </script>
 
 </body>

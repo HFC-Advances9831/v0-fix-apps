@@ -25,6 +25,7 @@
     .loading-container {
       text-align: center;
       color: #fff;
+      z-index: 10;
     }
     
     .glow {
@@ -69,6 +70,7 @@
       border: 2px solid rgba(200, 50, 50, 0.5);
       box-shadow: 0 0 30px rgba(200, 50, 50, 0.3);
       object-fit: cover;
+      display: none; /* Hidden until an icon is actually loaded */
     }
     
     .loading-text {
@@ -99,6 +101,7 @@
     .status {
       font-size: 14px;
       color: #888;
+      transition: color 0.3s ease;
     }
     
     @keyframes spin {
@@ -115,11 +118,6 @@
       40% { transform: scale(1); }
     }
     
-    /* Hidden form for CroxyProxy submission */
-    #proxyForm {
-      display: none;
-    }
-    
     iframe {
       position: fixed;
       top: 0;
@@ -127,11 +125,16 @@
       width: 100%;
       height: 100%;
       border: none;
-      display: none;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      z-index: 20;
+      background: #fff; /* Prevents transparent bleed-through */
     }
     
     iframe.loaded {
-      display: block;
+      opacity: 1;
+      pointer-events: all;
     }
   </style>
 </head>
@@ -150,51 +153,89 @@
       <span class="dot"></span>
       <span class="dot"></span>
     </div>
-    <p class="status" id="statusText">Connecting to proxy...</p>
+    <p class="status" id="statusText">Connecting to proxy engine...</p>
   </div>
 
-  <iframe id="proxyFrame" sandbox="allow-scripts allow-forms allow-same-origin allow-pointer-lock allow-downloads allow-popups" allow="fullscreen; autoplay; clipboard-read; clipboard-write"></iframe>
+  <form id="proxyForm" method="POST" target="proxyFrame" style="display: none;">
+    <input type="hidden" name="url" id="proxyInput" value="">
+  </form>
+
+  <iframe id="proxyFrame" name="proxyFrame" sandbox="allow-scripts allow-forms allow-same-origin allow-pointer-lock allow-downloads allow-popups" allow="fullscreen; autoplay; clipboard-read; clipboard-write"></iframe>
 
   <script>
-    // Get parameters from URL
+    // 1. Get parameters from URL
     const params = new URLSearchParams(window.location.search);
-    const targetUrl = params.get('url') || 'https://www.youtube.com/';
-    const appName = params.get('name') || 'App';
+    const targetUrl = params.get('url') || 'https://www.google.com';
+    const appName = params.get('name') || 'Application';
     const appIcon = params.get('icon') || '';
     
-    // Update UI
-    document.getElementById('loadingText').textContent = `Loading ${appName}...`;
-    if (appIcon) {
-      document.getElementById('appIcon').src = appIcon;
-    }
-    
-    // CroxyProxy URL format - encode the target URL
-    const encodedUrl = btoa(targetUrl);
-    const proxyUrl = `https://www.croxyproxy.rocks/` + encodedUrl;
-    
+    // 2. DOM Elements
     const iframe = document.getElementById('proxyFrame');
     const loadingUI = document.getElementById('loadingUI');
     const statusText = document.getElementById('statusText');
+    const iconElement = document.getElementById('appIcon');
+    const form = document.getElementById('proxyForm');
+    const formInput = document.getElementById('proxyInput');
     
-    // Try to load via CroxyProxy
-    statusText.textContent = 'Launching proxy...';
+    // 3. Update UI
+    document.getElementById('loadingText').textContent = `Loading ${appName}...`;
+    if (appIcon) {
+      iconElement.src = appIcon;
+      iconElement.style.display = 'block';
+    }
     
-    // Set iframe source to CroxyProxy with the target URL
-    iframe.src = `https://www.croxyproxy.rocks/?url=${encodeURIComponent(targetUrl)}`;
+    // 4. Proxy Engine Connection Logic
+    statusText.textContent = 'Launching proxy engine...';
     
+    /* * IMPORTANT: You need a proxy backend for this to work perfectly.
+     * Below is the setup for a standard self-hosted proxy (like Ultraviolet).
+     * Replace '/uv/service/' with your actual proxy path.
+     */
+     
+    const proxyMethod = 'GET'; // Change to 'POST' if your engine uses form submission
+    
+    try {
+      if (proxyMethod === 'GET') {
+        // Example for Ultraviolet or standard GET proxies:
+        // Commonly uses encodeURIComponent or a custom XOR encoder depending on backend
+        const encodedUrl = encodeURIComponent(targetUrl);
+        
+        // ** CHANGE THIS TO YOUR BACKEND DOMAIN/PATH **
+        // Right now, this just passes the raw URL to avoid breaking if you don't have a backend yet.
+        const finalProxyUrl = targetUrl; // E.g., change to: `/uv/service/${encodedUrl}`
+        
+        iframe.src = finalProxyUrl;
+      } else {
+        // Example for POST-based proxies:
+        form.action = '/your-proxy-endpoint'; // Set your backend POST endpoint here
+        formInput.value = targetUrl;
+        form.submit();
+      }
+    } catch (err) {
+      statusText.textContent = 'Error launching proxy connection.';
+      statusText.style.color = '#ff6b6b';
+      console.error(err);
+    }
+    
+    // 5. Handle successful load
     iframe.onload = function() {
+      // Fade out loading UI, fade in iframe
       loadingUI.style.display = 'none';
       iframe.classList.add('loaded');
     };
     
-    // Timeout fallback - keep showing loading if it takes too long
+    // 6. Timers to catch slow/failed loads
     setTimeout(() => {
-      statusText.textContent = 'Still connecting...';
-    }, 5000);
+      if (!iframe.classList.contains('loaded')) {
+        statusText.textContent = 'Negotiating connection...';
+      }
+    }, 4000);
     
     setTimeout(() => {
-      statusText.textContent = 'This may take a moment...';
-    }, 10000);
+      if (!iframe.classList.contains('loaded')) {
+        statusText.textContent = 'This is taking longer than expected...';
+      }
+    }, 8000);
   </script>
 </body>
 </html>

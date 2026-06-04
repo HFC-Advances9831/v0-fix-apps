@@ -70,7 +70,7 @@
       border: 2px solid rgba(200, 50, 50, 0.5);
       box-shadow: 0 0 30px rgba(200, 50, 50, 0.3);
       object-fit: cover;
-      display: none; /* Hidden until an icon is actually loaded */
+      display: none;
     }
     
     .loading-text {
@@ -129,7 +129,7 @@
       pointer-events: none;
       transition: opacity 0.5s ease;
       z-index: 20;
-      background: #fff; /* Prevents transparent bleed-through */
+      background: #fff;
     }
     
     iframe.loaded {
@@ -153,87 +153,86 @@
       <span class="dot"></span>
       <span class="dot"></span>
     </div>
-    <p class="status" id="statusText">Connecting to proxy engine...</p>
+    <p class="status" id="statusText">Bypassing security headers...</p>
   </div>
-
-  <form id="proxyForm" method="POST" target="proxyFrame" style="display: none;">
-    <input type="hidden" name="url" id="proxyInput" value="">
-  </form>
 
   <iframe id="proxyFrame" name="proxyFrame" sandbox="allow-scripts allow-forms allow-same-origin allow-pointer-lock allow-downloads allow-popups" allow="fullscreen; autoplay; clipboard-read; clipboard-write"></iframe>
 
   <script>
-    // 1. Get parameters from URL
+    // 1. Setup global hooks and grab URL parameters
     const params = new URLSearchParams(window.location.search);
     const targetUrl = params.get('url') || 'https://www.google.com';
     const appName = params.get('name') || 'Application';
     const appIcon = params.get('icon') || '';
     
-    // 2. DOM Elements
     const iframe = document.getElementById('proxyFrame');
     const loadingUI = document.getElementById('loadingUI');
     const statusText = document.getElementById('statusText');
     const iconElement = document.getElementById('appIcon');
-    const form = document.getElementById('proxyForm');
-    const formInput = document.getElementById('proxyInput');
     
-    // 3. Update UI
+    // 2. Adjust loading layout elements dynamically
     document.getElementById('loadingText').textContent = `Loading ${appName}...`;
     if (appIcon) {
       iconElement.src = appIcon;
       iconElement.style.display = 'block';
     }
     
-    // 4. Proxy Engine Connection Logic
-    statusText.textContent = 'Launching proxy engine...';
-    
-    /* * IMPORTANT: You need a proxy backend for this to work perfectly.
-     * Below is the setup for a standard self-hosted proxy (like Ultraviolet).
-     * Replace '/uv/service/' with your actual proxy path.
-     */
-     
-    const proxyMethod = 'GET'; // Change to 'POST' if your engine uses form submission
-    
-    try {
-      if (proxyMethod === 'GET') {
-        // Example for Ultraviolet or standard GET proxies:
-        // Commonly uses encodeURIComponent or a custom XOR encoder depending on backend
-        const encodedUrl = encodeURIComponent(targetUrl);
+    // 3. Client-Side Proxy Engine Engine Logic
+    async function loadSiteViaClientProxy(url) {
+      try {
+        statusText.textContent = 'Requesting secure data stream...';
         
-        // ** CHANGE THIS TO YOUR BACKEND DOMAIN/PATH **
-        // Right now, this just passes the raw URL to avoid breaking if you don't have a backend yet.
-        const finalProxyUrl = targetUrl; // E.g., change to: `/uv/service/${encodedUrl}`
+        // Pull raw text string from an open CORS proxy to get around browser blocks
+        const proxyGateway = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
         
-        iframe.src = finalProxyUrl;
-      } else {
-        // Example for POST-based proxies:
-        form.action = '/your-proxy-endpoint'; // Set your backend POST endpoint here
-        formInput.value = targetUrl;
-        form.submit();
+        const response = await fetch(proxyGateway);
+        if (!response.ok) throw new Error('Gateway connection rejected');
+        
+        let html = await response.text();
+        
+        statusText.textContent = 'Injecting layout routing rules...';
+        
+        // Critical Injection Rule: Insert an absolute base URL mapping rule 
+        // So styles, scripts, and media don't break inside the iframe render frame
+        const baseInjection = `<base href="${url}">`;
+        if (html.toLowerCase().includes('<head>')) {
+          html = html.replace(/<head>/i, `<head>${baseInjection}`);
+        } else {
+          html = baseInjection + html;
+        }
+        
+        // Write out the data manually straight into the sandboxed document channel
+        const iframeDoc = iframe.contentWindow.document || iframe.contentDocument;
+        iframeDoc.open();
+        iframeDoc.write(html);
+        iframeDoc.close();
+        
+        // Drop the loading curtain and switch frame to active view state
+        loadingUI.style.display = 'none';
+        iframe.classList.add('loaded');
+        
+      } catch (err) {
+        statusText.textContent = 'Failed to compile stream. Site security rules may block access.';
+        statusText.style.color = '#ff6b6b';
+        console.error('Tunnel Error Block:', err);
       }
-    } catch (err) {
-      statusText.textContent = 'Error launching proxy connection.';
-      statusText.style.color = '#ff6b6b';
-      console.error(err);
+    }
+
+    // Launch pipeline
+    if (targetUrl) {
+      loadSiteViaClientProxy(targetUrl);
     }
     
-    // 5. Handle successful load
-    iframe.onload = function() {
-      // Fade out loading UI, fade in iframe
-      loadingUI.style.display = 'none';
-      iframe.classList.add('loaded');
-    };
-    
-    // 6. Timers to catch slow/failed loads
+    // Backup UI timers for slower connection intervals
     setTimeout(() => {
-      if (!iframe.classList.contains('loaded')) {
-        statusText.textContent = 'Negotiating connection...';
+      if (!iframe.classList.contains('loaded') && statusText.style.color !== 'rgb(255, 107, 107)') {
+        statusText.textContent = 'Synchronizing runtime environments...';
       }
     }, 4000);
     
     setTimeout(() => {
-      if (!iframe.classList.contains('loaded')) {
-        statusText.textContent = 'This is taking longer than expected...';
+      if (!iframe.classList.contains('loaded') && statusText.style.color !== 'rgb(255, 107, 107)') {
+        statusText.textContent = 'Finalizing presentation layer...';
       }
     }, 8000);
   </script>

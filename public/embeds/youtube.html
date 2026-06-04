@@ -3,45 +3,58 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Carey Network - Test Page</title>
-<style>
-  body { 
-    background: #2c3e50; 
-    color: white; 
-    font-family: sans-serif; 
-    text-align: center; 
-    padding: 40px 20px; 
-  }
-  .container {
-    max-width: 600px;
-    margin: 0 auto;
-    background: #34495e;
-    padding: 30px;
-    border-radius: 12px;
-    border: 3px solid #e74c3c;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-  }
-  iframe { 
-    width: 100%; 
-    aspect-ratio: 16/9; 
-    border: 2px solid white; 
-    margin-top: 20px; 
-    background: #000;
-  }
-</style>
+<title>Apps - The Carey Network</title>
+<link rel="stylesheet" href="/css/style.css" />
+<link rel="apple-touch-icon" href="/images/icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="/images/icon.png">
 </head>
-<body>
+<body class="games-page">
 
-<div class="container">
-  <h1 style="color: #e74c3c; margin-top: 0;">Carey TV Diagnostic Test</h1>
-  <p><strong>Status:</strong> If you can see this blue/gray background and red box, your Vercel deployment is working perfectly!</p>
-  
-  <hr style="border: 0; border-top: 1px solid #5c758e; margin: 20px 0;">
-  
-  <p>Below is a direct video embed test. If the box below stays pure black or says "Connection Refused," your iPad or Wi-Fi network is blocking YouTube embeds.</p>
-  
-  <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+<header class="site-header">
+  <img src="/images/logo.png" class="logo" alt="The Carey Network Logo" />
+</header>
+
+<main>
+  <section class="hero orange-bg">
+    <div class="game-player">
+      <div class="game-frame">
+        <iframe id="gameFrame" src="/assets/embeds/youtube.html" data-src="/assets/embeds/youtube.html"></iframe>
+      </div>
+      <div class="game-controls">
+        <button onclick="refreshGame()">
+          <img src="/images/refresh.png" alt="Refresh">
+        </button>
+        <button onclick="toggleFullscreen()">
+          <img src="/images/fullscreen.png" alt="Fullscreen">
+        </button>
+        <button onclick="openDeletePopup()">
+          <img src="/images/delete.png" alt="Delete Save">
+        </button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="nav-container"></div>
+
+<footer class="site-footer">
+  <p>&copy; 2026 The Carey Network</p>
+</footer>
+
+<button id="exitFullscreenBtn" onclick="exitFullscreenMode()">✕</button>
+
+<div id="deletePopup" class="popup-overlay">
+  <div class="popup-content">
+    <p>Delete Saves (ts purges all data btw bc im dumb)</p>
+    <button onclick="confirmDelete()">Delete Saves</button>
+    <button onclick="closeDeletePopup()" style="margin-top:10px; background:#333;">Cancel</button>
+  </div>
 </div>
+
+<script src="/js/main.js"></script>
+<script src="/js/game.js"></script>
 
 </body>
 </html>

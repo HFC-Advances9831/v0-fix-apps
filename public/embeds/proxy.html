@@ -147,22 +147,24 @@
       <div class="spinner-inner"></div>
       <img id="appIcon" class="app-icon" src="" alt="App Icon">
     </div>
-    <p class="loading-text" id="loadingText">Loading App...</p>
+    <p class="loading-text" id="loadingText">Loading...</p>
     <div class="loading-dots">
       <span class="dot"></span>
       <span class="dot"></span>
       <span class="dot"></span>
     </div>
-    <p class="status" id="statusText">Bypassing security headers...</p>
+    <p class="status" id="statusText">Connecting to secure proxy network...</p>
   </div>
 
   <iframe id="proxyFrame" name="proxyFrame" sandbox="allow-scripts allow-forms allow-same-origin allow-pointer-lock allow-downloads allow-popups" allow="fullscreen; autoplay; clipboard-read; clipboard-write"></iframe>
 
+  <script src="/uv/uv.config.js" defer></script>
+  <script src="/uv/uv.bundle.js" defer></script>
+
   <script>
-    // 1. Setup global hooks and grab URL parameters
     const params = new URLSearchParams(window.location.search);
     const targetUrl = params.get('url') || 'https://www.google.com';
-    const appName = params.get('name') || 'Application';
+    const appName = params.get('name') || 'App';
     const appIcon = params.get('icon') || '';
     
     const iframe = document.getElementById('proxyFrame');
@@ -170,71 +172,51 @@
     const statusText = document.getElementById('statusText');
     const iconElement = document.getElementById('appIcon');
     
-    // 2. Adjust loading layout elements dynamically
     document.getElementById('loadingText').textContent = `Loading ${appName}...`;
     if (appIcon) {
       iconElement.src = appIcon;
       iconElement.style.display = 'block';
     }
     
-    // 3. Client-Side Proxy Engine Engine Logic
-    async function loadSiteViaClientProxy(url) {
+    function launchProxy() {
       try {
-        statusText.textContent = 'Requesting secure data stream...';
-        
-        // Pull raw text string from an open CORS proxy to get around browser blocks
-        const proxyGateway = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-        
-        const response = await fetch(proxyGateway);
-        if (!response.ok) throw new Error('Gateway connection rejected');
-        
-        let html = await response.text();
-        
-        statusText.textContent = 'Injecting layout routing rules...';
-        
-        // Critical Injection Rule: Insert an absolute base URL mapping rule 
-        // So styles, scripts, and media don't break inside the iframe render frame
-        const baseInjection = `<base href="${url}">`;
-        if (html.toLowerCase().includes('<head>')) {
-          html = html.replace(/<head>/i, `<head>${baseInjection}`);
+        // Checking if Ultraviolet scripts are registered locally
+        if (typeof __uv$config !== 'undefined') {
+          statusText.textContent = 'Initializing Ultraviolet session...';
+          iframe.src = __uv$config.prefix + __uv$config.encodeUrl(targetUrl);
         } else {
-          html = baseInjection + html;
+          // FALLBACK: If no local backend is detected, route through an iframe-safe public node
+          statusText.textContent = 'Routing via public network node...';
+          iframe.src = `https://cdn.embedly.com/widgets/media.html?src=${encodeURIComponent(targetUrl)}`;
         }
-        
-        // Write out the data manually straight into the sandboxed document channel
-        const iframeDoc = iframe.contentWindow.document || iframe.contentDocument;
-        iframeDoc.open();
-        iframeDoc.write(html);
-        iframeDoc.close();
-        
-        // Drop the loading curtain and switch frame to active view state
-        loadingUI.style.display = 'none';
-        iframe.classList.add('loaded');
-        
       } catch (err) {
-        statusText.textContent = 'Failed to compile stream. Site security rules may block access.';
+        statusText.textContent = 'Proxy configuration error.';
         statusText.style.color = '#ff6b6b';
-        console.error('Tunnel Error Block:', err);
+        console.error(err);
       }
     }
 
-    // Launch pipeline
-    if (targetUrl) {
-      loadSiteViaClientProxy(targetUrl);
-    }
+    // Run the proxy launch sequence
+    window.addEventListener('DOMContentLoaded', launchProxy);
     
-    // Backup UI timers for slower connection intervals
+    // Handle successful iframe rendering
+    iframe.onload = function() {
+      loadingUI.style.display = 'none';
+      iframe.classList.add('loaded');
+    };
+    
+    // Safety timers to update status messages if loading is slow
     setTimeout(() => {
-      if (!iframe.classList.contains('loaded') && statusText.style.color !== 'rgb(255, 107, 107)') {
-        statusText.textContent = 'Synchronizing runtime environments...';
+      if (!iframe.classList.contains('loaded')) {
+        statusText.textContent = 'Securing connection tunnel...';
       }
     }, 4000);
     
     setTimeout(() => {
-      if (!iframe.classList.contains('loaded') && statusText.style.color !== 'rgb(255, 107, 107)') {
-        statusText.textContent = 'Finalizing presentation layer...';
+      if (!iframe.classList.contains('loaded')) {
+        statusText.textContent = 'Taking longer than usual, verifying server health...';
       }
-    }, 8000);
+    }, 9000);
   </script>
 </body>
 </html>

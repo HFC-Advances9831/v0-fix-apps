@@ -43,25 +43,26 @@ export default function RootLayout({
         <NavDock />
         {process.env.NODE_ENV === 'production' && <Analytics />}
 
-        {/* INLINE AUDIO ENGINE + PANIC SYSTEM */}
+        {/* BULLETPROOF AUDIO ENGINE + PANIC SYSTEM */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
                 if (typeof window === 'undefined') return;
 
-                var audio = new Audio('/wiiu.mp3');
-                audio.loop = true;
-                audio.volume = 0.25;
-                audio.preload = 'auto';
-
-                function applySavedTime() {
+                // FIX 1: Attach to window to completely stop duplicate "ghost tracks"
+                if (!window.careyAudio) {
+                  window.careyAudio = new Audio('/wiiu.mp3');
+                  window.careyAudio.loop = true;
+                  window.careyAudio.preload = 'auto';
+                  
                   var savedTime = sessionStorage.getItem('wiiuMusicTime');
                   if (savedTime) {
-                    audio.currentTime = parseFloat(savedTime);
+                    window.careyAudio.currentTime = parseFloat(savedTime);
                   }
                 }
-                audio.addEventListener('loadedmetadata', applySavedTime);
+                
+                var audio = window.careyAudio;
 
                 audio.addEventListener('error', function() {
                   if (audio.src && audio.src.indexOf('.mp3.mp3') === -1) {
@@ -91,37 +92,36 @@ export default function RootLayout({
                 window.addEventListener('click', kickstartAudio, { passive: true });
                 window.addEventListener('touchstart', kickstartAudio, { passive: true });
 
-                // MAIN SYSTEM WATCHER Loop (Runs every 400ms)
+                // MAIN WATCHER LOOP (Runs every 400ms)
                 setInterval(function() {
                   var isPlayPage = window.location.pathname.includes('/play');
                   var isMuted = localStorage.getItem('wiiuMusicMuted') === 'true';
                   
-                  // 1. Handle Live Muting Control
-                  audio.muted = isMuted;
-
-                  if (isPlayPage) {
-                    if (!audio.paused) audio.pause();
+                  // FIX 2: Hard-pause audio on iPad if muted, rather than using audio.muted
+                  if (isMuted || isPlayPage) {
+                    if (!audio.paused) {
+                      audio.pause();
+                    }
                   } else {
-                    if (audio.paused && audio.currentTime > 0 && !isMuted) {
+                    // Only resume playing if unmuted and not on a game screen
+                    if (audio.paused && audio.currentTime > 0) {
                       audio.play().catch(function() {});
                     }
                   }
 
-                  // 2. Stealth Panic Button Management
+                  // Stealth Panic Button System (Working flawlessly)
                   var panicEnabled = localStorage.getItem('panicButtonEnabled') === 'true';
                   var existingBtn = document.getElementById('stealth-panic-button');
 
                   if (panicEnabled && !existingBtn) {
                     var btn = document.createElement('button');
                     btn.id = 'stealth-panic-button';
-                    
-                    // Invisible hit box but tiny visual red core dot
                     btn.style.position = 'fixed';
                     btn.style.top = '10px';
                     btn.style.left = '10px';
                     btn.style.width = '16px';
                     btn.style.height = '16px';
-                    btn.style.backgroundColor = '#ef4444'; // Red
+                    btn.style.backgroundColor = '#ef4444';
                     btn.style.borderRadius = '50%';
                     btn.style.zIndex = '999999';
                     btn.style.cursor = 'pointer';

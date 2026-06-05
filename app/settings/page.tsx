@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback } from "react";
 
 const settingsConfig = [
   {
@@ -39,7 +39,13 @@ const settingsConfig = [
     description: "Adds a tiny red redirect core to top-left",
     type: "toggle" as const,
   },
-]
+  {
+    id: "kill-switch",
+    title: "Self-Destruct",
+    description: "Permanently brick this site for this browser",
+    type: "danger-button" as const,
+  },
+];
 
 export default function SettingsPage() {
   const [toggles, setToggles] = useState<Record<string, boolean>>({
@@ -48,73 +54,79 @@ export default function SettingsPage() {
     "webapp-mode": false,
     "mute-music": false,
     "stealth-panic": false,
-  })
-  const [notification, setNotification] = useState<string | null>(null)
+  });
+  const [notification, setNotification] = useState<string | null>(null);
 
-  // Helper to map UI ids to match global localStorage keys exactly
   const getStorageKey = (id: string) => {
-    if (id === "mute-music") return "wiiuMusicMuted"
-    if (id === "stealth-panic") return "panicButtonEnabled"
-    return `toggle_${id}`
-  }
+    if (id === "mute-music") return "wiiuMusicMuted";
+    if (id === "stealth-panic") return "panicButtonEnabled";
+    return `toggle_${id}`;
+  };
 
   useEffect(() => {
-    const savedToggles: Record<string, boolean> = {}
+    const savedToggles: Record<string, boolean> = {};
     settingsConfig.forEach((setting) => {
       if (setting.type === "toggle") {
-        const key = getStorageKey(setting.id)
-        const saved = localStorage.getItem(key)
-        savedToggles[setting.id] = saved === "true"
+        const key = getStorageKey(setting.id);
+        const saved = localStorage.getItem(key);
+        savedToggles[setting.id] = saved === "true";
       }
-    })
-    setToggles(savedToggles)
-  }, [])
+    });
+    setToggles(savedToggles);
+  }, []);
 
   const triggerPanic = useCallback(() => {
-    window.location.href = "https://www.google.com"
-  }, [])
+    window.location.href = "https://www.google.com";
+  }, []);
 
   useEffect(() => {
-    if (!toggles["panic-button"]) return
+    if (!toggles["panic-button"]) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "`" || e.key === "Escape") {
-        triggerPanic()
+        triggerPanic();
       }
-    }
+    };
 
-    document.addEventListener("keydown", handleKeyDown)
-    return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [toggles, triggerPanic])
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [toggles, triggerPanic]);
 
   const handleToggle = (id: string) => {
-    const newValue = !toggles[id]
-    setToggles((prev) => ({ ...prev, [id]: newValue }))
-    
-    const key = getStorageKey(id)
-    localStorage.setItem(key, String(newValue))
-    
-    showNotification(`${id.replace(/-/g, " ")} ${newValue ? "enabled" : "disabled"}`)
-  }
+    const newValue = !toggles[id];
+    setToggles((prev) => ({ ...prev, [id]: newValue }));
+
+    const key = getStorageKey(id);
+    localStorage.setItem(key, String(newValue));
+
+    showNotification(`${id.replace(/-/g, " ")} ${newValue ? "enabled" : "disabled"}`);
+  };
 
   const activateCloak = () => {
-    document.title = "Google"
-    const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement
+    document.title = "Google";
+    const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
     if (link) {
-      link.href = "https://www.google.com/favicon.ico"
+      link.href = "https://www.google.com/favicon.ico";
     } else {
-      const newLink = document.createElement("link")
-      newLink.rel = "shortcut icon"
-      newLink.href = "https://www.google.com/favicon.ico"
-      document.head.appendChild(newLink)
+      const newLink = document.createElement("link");
+      newLink.rel = "shortcut icon";
+      newLink.href = "https://www.google.com/favicon.ico";
+      document.head.appendChild(newLink);
     }
-    showNotification("Cloak activated!")
-  }
+    showNotification("Cloak activated!");
+  };
+
+  const handleKillSwitch = () => {
+    if (confirm("WARNING: This will permanently disable the site for this browser. Continue?")) {
+      localStorage.setItem("site_status", "bricked");
+      window.location.reload();
+    }
+  };
 
   const showNotification = (message: string) => {
-    setNotification(message)
-    setTimeout(() => setNotification(null), 2000)
-  }
+    setNotification(message);
+    setTimeout(() => setNotification(null), 2000);
+  };
 
   return (
     <main className="max-w-7xl mx-auto px-6 pt-24 pb-8">
@@ -146,6 +158,13 @@ export default function SettingsPage() {
               >
                 Activate
               </button>
+            ) : setting.type === "danger-button" ? (
+              <button
+                onClick={handleKillSwitch}
+                className="px-8 py-3 rounded-lg font-semibold border-2 border-red-500 text-red-500 hover:bg-red-600 hover:text-white transition-colors mt-auto"
+              >
+                Destroy
+              </button>
             ) : (
               <button
                 onClick={() => handleToggle(setting.id)}
@@ -163,5 +182,5 @@ export default function SettingsPage() {
         © 2026 Carey Network
       </footer>
     </main>
-  )
+  );
 }

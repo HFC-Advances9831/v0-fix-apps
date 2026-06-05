@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { NavDock } from '@/components/nav-dock'
 import { Header } from '@/components/header'
-import Script from 'next/script' // Safe native Next.js script engine
 import './globals.css'
 
 const geist = Geist({ 
@@ -44,55 +43,73 @@ export default function RootLayout({
         <NavDock />
         {process.env.NODE_ENV === 'production' && <Analytics />}
 
-        {/* Next.js Compiler Safe Audio Engine */}
-        <Script id="wiiu-audio-engine" strategy="afterInteractive">
-          {`
-            (function() {
-              if (typeof window === 'undefined') return;
+        {/* INSTANT INLINE AUDIO ENGINE - BYPASSES SAFARI BLOCKS */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                if (typeof window === 'undefined') return;
 
-              // Connects perfectly to the exact filename in your repository
-              const audio = new Audio('/wiiu.mp3.mp3');
-              audio.loop = true;
-              audio.volume = 0.20; // 20% background balance
-              audio.preload = 'auto';
+                // 1. Initialize audio with the standard filename path
+                var audio = new Audio('/wiiu.mp3');
+                audio.loop = true;
+                audio.volume = 0.25;
+                audio.preload = 'auto';
 
-              const savedTime = sessionStorage.getItem('wiiuMusicTime');
-              if (savedTime) {
-                audio.currentTime = parseFloat(savedTime);
-              }
+                // 2. Filename Safety Net: If wiiu.mp3 fails, hot-swap to the double-extension file automatically
+                audio.addEventListener('error', function() {
+                  if (audio.src && audio.src.indexOf('.mp3.mp3') === -1) {
+                    console.log("Switching to double extension fallback path...");
+                    audio.src = '/wiiu.mp3.mp3';
+                    audio.load();
+                  }
+                });
 
-              audio.addEventListener('timeupdate', function() {
-                if (!audio.paused) {
-                  sessionStorage.setItem('wiiuMusicTime', audio.currentTime);
-                }
-              });
+                // 3. Track continuity across page loads
+                var savedTime = sessionStorage.getItem('wiiuMusicTime');
+                if (savedTime) {
+                  audio.currentTime = parseFloat(savedTime);
+                    }
 
-              function syncAudioState() {
-                const isPlayPage = window.location.pathname.includes('/play');
-                if (isPlayPage) {
-                  if (!audio.paused) audio.pause();
-                } else {
-                  if (audio.paused) {
-                    audio.play().catch(function() {});
+                audio.addEventListener('timeupdate', function() {
+                  if (!audio.paused) {
+                    sessionStorage.setItem('wiiuMusicTime', audio.currentTime);
+                  }
+                });
+
+                // 4. Synchronous user-gesture trigger (Directly authorized by Safari)
+                function kickstartAudio() {
+                  var isPlayPage = window.location.pathname.includes('/play');
+                  
+                  if (!isPlayPage && audio.paused) {
+                    audio.play().then(function() {
+                      // Once unlocked and running, clear global start hooks safely
+                      window.removeEventListener('click', kickstartAudio);
+                      window.removeEventListener('touchstart', kickstartAudio);
+                    }).catch(function(err) {
+                      console.log("Waiting for verified interaction...");
+                    });
                   }
                 }
-              }
 
-              // Overrides strict iOS Safari auto-mute blocks on the first interaction
-              window.addEventListener('click', syncAudioState, { passive: true });
-              window.addEventListener('touchstart', syncAudioState, { passive: true });
+                window.addEventListener('click', kickstartAudio, { passive: true });
+                window.addEventListener('touchstart', kickstartAudio, { passive: true });
 
-              // Watches page transitions dynamically
-              let currentPath = window.location.pathname;
-              setInterval(function() {
-                if (window.location.pathname !== currentPath) {
-                  currentPath = window.location.pathname;
-                  syncAudioState();
-                }
-              }, 400);
-            })();
-          `}
-        </Script>
+                // 5. Route Watcher: Pauses during apps/games, resumes on main menus
+                setInterval(function() {
+                  var isPlayPage = window.location.pathname.includes('/play');
+                  if (isPlayPage) {
+                    if (!audio.paused) audio.pause();
+                  } else {
+                    if (audio.paused && audio.currentTime > 0) {
+                      audio.play().catch(function() {});
+                    }
+                  }
+                }, 400);
+              })();
+            `,
+          }}
+        />
       </body>
     </html>
   )

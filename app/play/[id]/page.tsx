@@ -16,6 +16,24 @@ export default function PlayPage() {
   const [key, setKey] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
 
+  // IPAD TRACKER: Remembers this was the last active game if Safari gets forced closed
+  useEffect(() => {
+    if (!gameId) return
+
+    const saveActiveSession = () => {
+      localStorage.setItem("carey_network_last_game", gameId)
+    }
+
+    // Capture the exact moment they swipe up, lock the screen, or change tabs
+    window.addEventListener("visibilitychange", saveActiveSession)
+    window.addEventListener("pagehide", saveActiveSession)
+
+    return () => {
+      window.removeEventListener("visibilitychange", saveActiveSession)
+      window.removeEventListener("pagehide", saveActiveSession)
+    }
+  }, [gameId])
+
   useEffect(() => {
     // Handle escape key to exit fullscreen
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -57,9 +75,12 @@ export default function PlayPage() {
   }
 
   const handleClearData = () => {
-    if (confirm("This will clear all saved data for this game. Continue?")) {
-      localStorage.clear()
-      sessionStorage.clear()
+    if (confirm(`This will clear saved data for ${game.name}. Continue?`)) {
+      // FIX: Only clear data matching this specific game's ID 
+      // This protects your layout settings and wiiuMusicTime from getting deleted!
+      localStorage.removeItem(`game_save_${gameId}`)
+      localStorage.removeItem(`${gameId}_scores`)
+      
       handleRefresh()
     }
   }

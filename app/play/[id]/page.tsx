@@ -141,7 +141,7 @@ export default function PlayPage() {
         )}
         <iframe
           key={key}
-          src={game.assetUrl}
+          src={`/app/api/proxy?url=${encodeURIComponent(game.assetUrl)}`}
           className="absolute inset-0 w-full h-full border-0"
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock allow-presentation allow-downloads"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; gamepad"

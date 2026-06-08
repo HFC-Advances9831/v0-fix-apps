@@ -9,22 +9,57 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="icon" href="/images/icon.png">
+  <style>
+    /* Ensure iframe fills its container with no black bars */
+    .game-frame {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 */
+      height: 0;
+      overflow: hidden;
+    }
+    .game-frame iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #000;
+    }
+    /* Fullscreen: make the container expand properly on iOS Safari */
+    .game-frame:-webkit-full-screen { width: 100%; height: 100%; padding-bottom: 0; }
+    .game-frame:-webkit-full-screen iframe { position: static; width: 100%; height: 100%; }
+    .game-frame:fullscreen { width: 100%; height: 100%; padding-bottom: 0; }
+    .game-frame:fullscreen iframe { position: static; width: 100%; height: 100%; }
+    #exitFullscreenBtn { display: none; }
+  </style>
 </head>
 <body class="games-page">
-
 <header class="site-header">
   <img src="/images/logo.png" class="logo" alt="The Carey Network Logo" />
 </header>
-
 <main>
   <section class="hero orange-bg">
     <div class="game-player">
-      <div class="game-frame">
-        <iframe 
-          id="gameFrame" 
-          src="https://iv.melmac.space" 
-          data-src="https://iv.melmac.space" 
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen">
+      <div class="game-frame" id="youtubeContainer">
+        <!--
+          YouTube BLOCKS iframes pointed at youtube.com directly.
+          The only working format is youtube.com/embed/...
+          This loads the YouTube trending feed via their official embed API.
+          To show a specific video instead, use:
+            src="https://www.youtube.com/embed/VIDEO_ID_HERE?autoplay=0"
+        -->
+        <iframe
+          id="gameFrame"
+          src="https://www.youtube.com/embed?listType=search&list=trending"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+          allowfullscreen
+          webkitallowfullscreen
+          mozallowfullscreen
+          frameborder="0"
+          referrerpolicy="no-referrer-when-downgrade"
+          loading="lazy"
+          title="YouTube">
         </iframe>
       </div>
       <div class="game-controls">
@@ -41,15 +76,11 @@
     </div>
   </section>
 </main>
-
 <div id="nav-container"></div>
-
 <footer class="site-footer">
   <p>&copy; 2026 The Carey Network</p>
 </footer>
-
-<button id="exitFullscreenBtn" onclick="exitFullscreenMode()">✕</button>
-
+<button id="exitFullscreenBtn" onclick="exitFullscreenMode()">&#x2715;</button>
 <div id="deletePopup" class="popup-overlay">
   <div class="popup-content">
     <p>Delete Saves (ts purges all data btw bc im dumb)</p>
@@ -57,9 +88,60 @@
     <button onclick="closeDeletePopup()" style="margin-top:10px; background:#333;">Cancel</button>
   </div>
 </div>
-
 <script src="/js/main.js"></script>
-<script src="/js/game.js"></script>
+<script>
+  /* --- YouTube-compatible versions of all game.js functions --- */
 
+  function refreshGame() {
+    var frame = document.getElementById('gameFrame');
+    var src = frame.src;
+    frame.src = '';
+    setTimeout(function() { frame.src = src; }, 150);
+  }
+
+  function toggleFullscreen() {
+    var container = document.getElementById('youtubeContainer');
+    var btn = document.getElementById('exitFullscreenBtn');
+    var isFS = document.fullscreenElement || document.webkitFullscreenElement;
+    if (isFS) {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    } else {
+      if (container.requestFullscreen) container.requestFullscreen();
+      else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen(); /* Safari / iPadOS */
+      btn.style.display = 'flex';
+    }
+  }
+
+  function exitFullscreenMode() {
+    if (document.exitFullscreen) document.exitFullscreen();
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    document.getElementById('exitFullscreenBtn').style.display = 'none';
+  }
+
+  function openDeletePopup()  { document.getElementById('deletePopup').style.display = 'flex'; }
+  function closeDeletePopup() { document.getElementById('deletePopup').style.display = 'none'; }
+
+  function confirmDelete() {
+    localStorage.clear();
+    sessionStorage.clear();
+    document.cookie.split(';').forEach(function(c) {
+      var name = c.split('=')[0].trim();
+      document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+    });
+    closeDeletePopup();
+    refreshGame();
+  }
+
+  /* Hide exit button on fullscreen change (Esc key or browser chrome) */
+  document.addEventListener('fullscreenchange', function() {
+    if (!document.fullscreenElement)
+      document.getElementById('exitFullscreenBtn').style.display = 'none';
+  });
+  document.addEventListener('webkitfullscreenchange', function() {
+    if (!document.webkitFullscreenElement)
+      document.getElementById('exitFullscreenBtn').style.display = 'none';
+  });
+</script>
 </body>
 </html>

@@ -1,60 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Apps - The Carey Network</title>
-<link rel="stylesheet" href="/css/style.css" />
-<link rel="apple-touch-icon" href="/images/icon.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="icon" href="/images/icon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube - Unblocked Player</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #000000;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
 </head>
-<body class="games-page">
+<body>
 
-<header class="site-header">
-  <img src="/images/logo.png" class="logo" alt="The Carey Network Logo" />
-</header>
-
-<main>
-  <section class="hero orange-bg">
-    <div class="game-player">
-      <div class="game-frame">
-        <iframe id="gameFrame" src="/assets/embeds/youtube.html" data-src="/assets/embeds/youtube.html"></iframe>
-      </div>
-      <div class="game-controls">
-        <button onclick="refreshGame()">
-          <img src="/images/refresh.png" alt="Refresh">
-        </button>
-        <button onclick="toggleFullscreen()">
-          <img src="/images/fullscreen.png" alt="Fullscreen">
-        </button>
-        <button onclick="openDeletePopup()">
-          <img src="/images/delete.png" alt="Delete Save">
-        </button>
-      </div>
-    </div>
-  </section>
-</main>
-
-<div id="nav-container"></div>
-
-<footer class="site-footer">
-  <p>&copy; 2026 The Carey Network</p>
-</footer>
-
-<button id="exitFullscreenBtn" onclick="exitFullscreenMode()">✕</button>
-
-<div id="deletePopup" class="popup-overlay">
-  <div class="popup-content">
-    <p>Delete Saves (ts purges all data btw bc im dumb)</p>
-    <button onclick="confirmDelete()">Delete Saves</button>
-    <button onclick="closeDeletePopup()" style="margin-top:10px; background:#333;">Cancel</button>
-  </div>
-</div>
-
-<script src="/js/main.js"></script>
-<script src="/js/game.js"></script>
+  <iframe 
+    src="/api/proxy?url=https://iv.melmac.space" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" 
+    string="">
+  </iframe>
 
 </body>
 </html>

@@ -40,6 +40,12 @@ const settingsConfig = [
     type: "toggle" as const,
   },
   {
+    id: "clear-saves",
+    title: "Delete Saved Data",
+    description: "Wipes all game saves for every game",
+    type: "danger-button" as const,
+  },
+  {
     id: "kill-switch",
     title: "Self-Destruct",
     description: "Permanently brick this site for this browser",
@@ -116,11 +122,39 @@ export default function SettingsPage() {
     showNotification("Cloak activated!");
   };
 
+  const handleClearSaves = () => {
+    if (confirm("This will delete all saved game data for every game. Continue?")) {
+      // Get all localStorage keys
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key) continue;
+        // Remove game saves but PROTECT settings keys
+        const isSettingsKey =
+          key === "wiiuMusicMuted" ||
+          key === "panicButtonEnabled" ||
+          key === "site_status" ||
+          key === "carey_network_last_game" ||
+          key.startsWith("toggle_");
+        if (!isSettingsKey) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach((key) => localStorage.removeItem(key));
+      showNotification("All game saves deleted!");
+    }
+  };
+
   const handleKillSwitch = () => {
     if (confirm("WARNING: This will permanently disable the site for this browser. Continue?")) {
       localStorage.setItem("site_status", "bricked");
       window.location.reload();
     }
+  };
+
+  const handleDangerButton = (id: string) => {
+    if (id === "kill-switch") handleKillSwitch();
+    if (id === "clear-saves") handleClearSaves();
   };
 
   const showNotification = (message: string) => {
@@ -160,10 +194,10 @@ export default function SettingsPage() {
               </button>
             ) : setting.type === "danger-button" ? (
               <button
-                onClick={handleKillSwitch}
+                onClick={() => handleDangerButton(setting.id)}
                 className="px-8 py-3 rounded-lg font-semibold border-2 border-red-500 text-red-500 hover:bg-red-600 hover:text-white transition-colors mt-auto"
               >
-                Destroy
+                {setting.id === "clear-saves" ? "Delete" : "Destroy"}
               </button>
             ) : (
               <button

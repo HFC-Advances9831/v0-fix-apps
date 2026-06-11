@@ -5,17 +5,55 @@ export interface App {
   url: string
   embedUrl: string
   canEmbed: boolean
-  proxyTarget?: string
 }
 
-const CAREY_ICONS = "https://careynet.github.io/images/apps"
-const CAREY_EMBEDS = "https://careynet.github.io/assets/embeds"
-
 export const apps: App[] = [
-  { id: "youtube", name: "YouTube", icon: `${CAREY_ICONS}/youtube.png`, url: "https://www.youtube.com/", embedUrl: `${CAREY_EMBEDS}/youtube.html`, canEmbed: true },
-  { id: "discord", name: "Discord", icon: `${CAREY_ICONS}/discord.png`, url: "https://discord.com/app", embedUrl: `${CAREY_EMBEDS}/discord.html`, canEmbed: true },
-  { id: "gemini", name: "Gemini", icon: `${CAREY_ICONS}/gemini.png`, url: "https://gemini.google.com/", embedUrl: `${CAREY_EMBEDS}/gemini.html`, canEmbed: true },
-  { id: "twitch", name: "Twitch", icon: `${CAREY_ICONS}/twitch.png`, url: "https://www.twitch.tv/", embedUrl: `${CAREY_EMBEDS}/twitch.html`, canEmbed: true },
-  { id: "snapchat", name: "Snapchat", icon: `${CAREY_ICONS}/snapchat.png`, url: "https://web.snapchat.com/", embedUrl: `${CAREY_EMBEDS}/snapchat.html`, canEmbed: true },
-  { id: "croxyproxy", name: "CroxyProxy", icon: "https://cdn.croxyproxy.rocks/images/logo.png", url: "https://www.croxyproxy.rocks/", embedUrl: "https://www.croxyproxy.rocks/", canEmbed: true },
+  {
+    id: "youtube",
+    name: "YouTube",
+    icon: "https://www.youtube.com/favicon.ico",
+    url: "https://www.youtube.com/",
+    embedUrl: "/embeds/youtube.html",
+    canEmbed: true,
+  },
+  {
+    id: "twitch",
+    name: "Twitch",
+    icon: "https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c1b.png",
+    url: "https://www.twitch.tv/",
+    embedUrl: "/embeds/twitch.html",
+    canEmbed: true,
+  },
+  {
+    id: "discord",
+    name: "Discord",
+    icon: "https://discord.com/assets/favicon.ico",
+    url: "https://discord.com/app",
+    embedUrl: "/embeds/discord.html",
+    canEmbed: true,
+  },
+  {
+    id: "snapchat",
+    name: "Snapchat",
+    icon: "https://web.snapchat.com/favicon.ico",
+    url: "https://web.snapchat.com/",
+    embedUrl: "/embeds/proxy.html?url=https://web.snapchat.com&name=Snapchat",
+    canEmbed: true,
+  },
+  {
+    id: "gemini",
+    name: "Gemini",
+    icon: "https://www.gstatic.com/lamda/images/gemini_favicon_f069958c85030456e93de685481c559f160ea06.svg",
+    url: "https://gemini.google.com/",
+    embedUrl: "/embeds/proxy.html?url=https://gemini.google.com&name=Gemini",
+    canEmbed: true,
+  },
+  {
+    id: "croxyproxy",
+    name: "CroxyProxy",
+    icon: "https://cdn.croxyproxy.rocks/images/logo.png",
+    url: "https://www.croxyproxy.rocks/",
+    embedUrl: "/embeds/proxy.html?url=https://www.croxyproxy.rocks&name=CroxyProxy",
+    canEmbed: true,
+  },
 ]
